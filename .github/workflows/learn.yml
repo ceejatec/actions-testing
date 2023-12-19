@@ -3,11 +3,23 @@ run-name: ${{ github.actor }} is learning GitHub Actions
 on: [push]
 jobs:
   check-bats-version:
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    strategy:
+      matrix:
+        include:
+          - arg1: foo-a
+            arg2: bar-a
+          - arg1: foo-b
+            arg2: bar-b
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-      - run: npm install -g bats
-      - run: bats -v
+      - run: echo "${{ toJSON(github) }}"
+      - run: echo "${{ toJSON(env) }}"
+      - run: echo "${{ toJSON(job) }}"
+      - run: echo "${{ toJSON(steps) }}"
+      - run: echo "${{ toJSON(runner) }}"
+      - run: echo "${{ toJSON(secrets) }}"
+      - run: echo "${{ toJSON(strategy) }}"
+      - run: echo "${{ toJSON(matrix) }}"
+      - run: echo "${{ toJSON(needs) }}"
+      - run: echo "${{ toJSON(inputs) }}"
+      - run: echo "${{ join(matrix.*, ' - ') }} + ${{ github.event_name }}"
+    runs-on: buildjet-4vcpu-ubuntu-2204
