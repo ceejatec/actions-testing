@@ -2,24 +2,27 @@ name: learn-github-actions
 run-name: ${{ github.actor }} is learning GitHub Actions
 on: [push]
 jobs:
-  check-bats-version:
+  batty-matrix:
+    if: false
     strategy:
       matrix:
         include:
-          - arg1: foo-a
-            arg2: bar-a
-          - arg1: foo-b
-            arg2: bar-b
+          - result: true
+            alt: false
+          - result: false
+            alt: false
+          - result: true
+            alt: true
+          - result: false
+            alt: true
     steps:
-      - run: echo "${{ toJSON(github) }}"
-      - run: echo "${{ toJSON(env) }}"
-      - run: echo "${{ toJSON(job) }}"
-      - run: echo "${{ toJSON(steps) }}"
-      - run: echo "${{ toJSON(runner) }}"
-      - run: echo "${{ toJSON(secrets) }}"
-      - run: echo "${{ toJSON(strategy) }}"
-      - run: echo "${{ toJSON(matrix) }}"
-      - run: echo "${{ toJSON(needs) }}"
-      - run: echo "${{ toJSON(inputs) }}"
-      - run: echo "${{ join(matrix.*, ' - ') }} + ${{ github.event_name }}"
+      - run: true || ${{ matrix.alt }}
     runs-on: buildjet-4vcpu-ubuntu-2204
+  did-it-work:
+    needs: [ batty-matrix ]
+    if: always()
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    steps:
+    - run: |-
+        failures=$(echo '${{ toJSON(needs) }}' | jq -c '.[] | select (.result | IN("failure", "cancelled"))')
+        test -z "${failures}"
