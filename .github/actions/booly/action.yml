@@ -1,0 +1,15 @@
+name: booly
+inputs:
+  skipit:
+    description: Do it
+    required: false
+    default: ''
+  greet:
+    required: true
+runs:
+  using: composite
+  steps:
+  - run: |-
+      echo Hello ${{ inputs.greet }}
+    shell: bash
+    if: inputs.skipit

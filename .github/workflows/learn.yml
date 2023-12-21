@@ -3,7 +3,6 @@ run-name: ${{ github.actor }} is learning GitHub Actions
 on: [push]
 jobs:
   batty-matrix:
-    if: false
     strategy:
       matrix:
         include:
@@ -16,7 +15,15 @@ jobs:
           - result: false
             alt: true
     steps:
-      - run: true || ${{ matrix.alt }}
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - run: true || ${{ matrix.result }}
+      - uses: './.github/actions/booly'
+        with:
+          skipit: ${{ matrix.alt }}
+          greet: TAKE1
+      - uses: './.github/actions/booly'
+        with:
+          greet: TAKE2
     runs-on: buildjet-4vcpu-ubuntu-2204
   did-it-work:
     needs: [ batty-matrix ]
